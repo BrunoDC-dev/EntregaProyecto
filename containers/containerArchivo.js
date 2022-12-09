@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-class Contenedor {
+class Container {
     constructor(fileName, keys) {
         this._filename = fileName;
         this._keys = [...keys, "id"];
@@ -43,6 +43,20 @@ class Contenedor {
         id = Number(id);
         try {
             const data = await this.getData();
+            console.log(data)
+            const parsedData = JSON.parse(data);
+
+            return parsedData.find((producto) => producto.id == id);
+        } catch (error) {
+            console.log(
+                ` error al obtener el elemento por su id(${id})`
+            );
+        }
+    }
+    async getProducts(id) {
+        id = Number(id);
+        try {
+            const data = await this.getData();
             const parsedData = JSON.parse(data);
 
             return parsedData.find((producto) => producto.id === id);
@@ -78,7 +92,7 @@ class Contenedor {
         }
     }
 
-    async updateById(id, newData) {
+    async updateProduct(id, newData) {
         if (this._validateKeysExist(newData)) {
             try {
                 id = Number(id);
@@ -89,13 +103,13 @@ class Contenedor {
                 );
                 if (objectIdToBeUpdated) {
                     const index = parsedData.indexOf(objectIdToBeUpdated);
-                    const { title, price, description, code, image, stock } = newData;
+                    const { name, price, description, code, pic, stock } = newData;
 
-                    parsedData[index]['title'] = title;
+                    parsedData[index]['name'] = name;
                     parsedData[index]['price'] = price;
                     parsedData[index]['description'] = description;
                     parsedData[index]['code'] = code;
-                    parsedData[index]['image'] = image;
+                    parsedData[index]['pic'] = pic;
                     parsedData[index]['stock'] = stock;
                     await fs.promises.writeFile(this._filename, JSON.stringify(parsedData));
                     return true;
@@ -228,4 +242,4 @@ class Contenedor {
     }
 }
 
-module.exports = Contenedor;
+module.exports = Container;
