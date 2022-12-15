@@ -1,7 +1,6 @@
 const { Schema } = require('mongoose');
 const Container = require('../containers/containerMongoDB');
-const { products } = require('./DaosProducts');
-
+const {products}=require('../controllers/controllerProducts')
 class Carts extends Container {
     constructor() {
         super('carts', new Schema({
@@ -17,12 +16,13 @@ class Carts extends Container {
             ]
         }, { timestamps: true }));
     }
-    getProducts(id) {
-        return this.model.findById(id).find({ products: {} });
+    async getProducts(id) {
+        const producto =await this.model.findById(id);
+        return producto.products
     }
     async saveProduct(idProduct, idCart) {
         console.log(idProduct, idCart);
-        const product = await products.model.findById(idProduct);
+        const product = await products.getById(idProduct);
         const cart = await this.model.findById(idCart);
         await cart.products.push(product);
         return await cart.save();
